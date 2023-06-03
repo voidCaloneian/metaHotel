@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'meta.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.db.backends.sqlite3",
         "NAME": "meta_postgres_db01",
-        "USER": "void",
-        "PASSWORD": "hotel",
-        "HOST": "postgres",
-        "PORT": 5432
+        # "USER": "void",
+        # "PASSWORD": "hotel",
+        # "HOST": "postgres",
+        # "PORT": 5432
     }
 }
 
