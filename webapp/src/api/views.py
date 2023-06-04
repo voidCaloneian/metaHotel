@@ -72,5 +72,6 @@ class BindHotelsAPIView(APIView):
         #  Обновление было не через update метод для того,
         #  чтобы записывалась и история отелей 
         for hotel in hotels:
-            hotel.meta_hotel = meta_hotel
-            hotel.save() 
+            if hotel.meta_hotel != meta_hotel:
+                hotel.meta_hotel = meta_hotel
+                hotel.save() 
