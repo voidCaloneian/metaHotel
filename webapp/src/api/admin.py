@@ -3,4 +3,9 @@ from .models import MetaHotel, Hotel, HotelHistory
 
 admin.site.register(MetaHotel)
 admin.site.register(Hotel)
-admin.site.register(HotelHistory)
+
+class HotelHistoryAdmin(admin.ModelAdmin):
+    readonly_fields = ('linked_datetime',)
+
+admin.site.register(HotelHistory, HotelHistoryAdmin)
+

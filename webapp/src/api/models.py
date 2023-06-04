@@ -38,10 +38,10 @@ class Hotel(models.Model):
 class HotelHistory(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.SET_NULL, null=True, related_name='history')
     meta_hotel = models.ForeignKey(MetaHotel, on_delete=models.SET_NULL, null=True, related_name='history')
-    linked_datetime = models.DateTimeField(auto_now=True, blank=True)
+    linked_datetime = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __str__(self):
-        return f'Hotel: {self.hotel} linked to {self.meta_hotel}'
+        return f'{self.hotel} linked to {self.meta_hotel}'
     
     @staticmethod
     def create_hotel_history(instance):

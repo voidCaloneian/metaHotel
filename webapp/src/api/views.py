@@ -12,6 +12,13 @@ class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
     """
     serializer_class = HotelSerializer
     queryset = Hotel.objects.all()
+    
+    def retrieve(self, request, *args, **kwargs):
+        """
+            | Получить историю привязки отеля (к каким мета-отелям в какой момент времени он был привязан)
+        """
+        
+        
 
 class MetaHotelViewSet(ListModelMixin, GenericViewSet):
     """
