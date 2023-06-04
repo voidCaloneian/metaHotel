@@ -9,11 +9,11 @@ class MetaHotel(models.Model):
 
 class Hotel(models.Model):
     name = models.CharField(max_length=100)
-    supplier = models.ForeignKey(MetaHotel, on_delete=models.SET_NULL, null=True, blank=True, max_length=100, related_name='hotels')
+    meta_hotel = models.ForeignKey(MetaHotel, on_delete=models.SET_NULL, null=True, blank=True, max_length=100, related_name='hotels')
     
     class Meta:
         indexes = [
-            models.Index(fields=['supplier']),
+            models.Index(fields=['meta_hotel']),
         ]
 
     def __str__(self):
@@ -30,8 +30,8 @@ class Hotel(models.Model):
     @staticmethod
     def create_hotel_history_if_need(instance):
         old_hotel_data = Hotel.objects.get(pk=instance.pk)
-        old_hotel_supplier = old_hotel_data.supplier
-        if old_hotel_supplier != instance.supplier:
+        old_hotel_meta_hotel = old_hotel_data.meta_hotel
+        if old_hotel_meta_hotel != instance.meta_hotel:
             HotelHistory.create_hotel_history(instance)
         
 
@@ -47,5 +47,5 @@ class HotelHistory(models.Model):
     def create_hotel_history(instance):
         HotelHistory.objects.create(
             hotel=instance,
-            meta_hotel=instance.supplier
+            meta_hotel=instance.meta_hotel
         )
