@@ -14,5 +14,8 @@ class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
     queryset = Hotel.objects.all()
 
 class MetaHotelViewSet(ListModelMixin, GenericViewSet):
+    """
+        | Получить список мета-отелей и входящих в них отелей
+    """
     serializer_class = MetaHotelSerializer
-    queryset = MetaHotel.objects.all()
+    queryset = MetaHotel.objects.prefetch_related('hotels').all()

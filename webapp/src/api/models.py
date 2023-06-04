@@ -10,6 +10,11 @@ class MetaHotel(models.Model):
 class Hotel(models.Model):
     name = models.CharField(max_length=100)
     supplier = models.ForeignKey(MetaHotel, on_delete=models.SET_NULL, null=True, blank=True, max_length=100, related_name='hotels')
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['supplier']),
+        ]
 
     def __str__(self):
         return self.name
