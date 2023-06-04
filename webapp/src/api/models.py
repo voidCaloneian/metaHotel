@@ -1,8 +1,4 @@
-from django.db import models, transaction
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from functools import partial
-from django.utils import timezone
+from django.db import models
 
 
 class MetaHotel(models.Model):
@@ -18,6 +14,21 @@ class Hotel(models.Model):
     def __str__(self):
         return self.name
     
+    def save(self, *args, **kwargs):
+        try:
+            self.compare_supplier_and_create_hotel_history(self)
+            super().save(*args, **kwargs)
+        except Hotel.DoesNotExist:
+            super().save(*args, **kwargs)
+            HotelHistory.create_hotel_history(self)
+    
+    @staticmethod
+    def compare_supplier_and_create_hotel_history(instance):
+        old_hotel_data = Hotel.objects.get(pk=instance.pk)
+        old_hotel_supplier = old_hotel_data.supplier
+        if old_hotel_supplier != instance.supplier:
+            HotelHistory.create_hotel_history(instance)
+        
 
 class HotelHistory(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.SET_NULL, null=True, related_name='history')
@@ -26,23 +37,10 @@ class HotelHistory(models.Model):
 
     def __str__(self):
         return f'Hotel: {self.hotel} linked to {self.meta_hotel}'
-
-@receiver(pre_save, sender=Hotel)
-def create_hotel_history(sender, instance, **kwargs):
-    def create_hotel_history_object(instance):
-        HotelHistory.objects.create(
-            hotel = instance,
-            meta_hotel = instance.supplier
-        )
-    try:
-        previous_supplier = Hotel.objects.get(id=instance.id)
-        if previous_supplier != instance.supplier:
-            transaction.on_commit(partial(
-                create_hotel_history_object, instance=instance
-            ))
-    except Hotel.DoesNotExist:
-        transaction.on_commit(partial(
-            create_hotel_history_object, instance=instance
-        ))
-            
     
+    @staticmethod
+    def create_hotel_history(instance):
+        HotelHistory.objects.create(
+            hotel=instance,
+            meta_hotel=instance.supplier
+        )
