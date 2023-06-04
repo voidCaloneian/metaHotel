@@ -16,14 +16,14 @@ class Hotel(models.Model):
     
     def save(self, *args, **kwargs):
         try:
-            self.compare_supplier_and_create_hotel_history(self)
+            self.create_hotel_history_if_need(self)
             super().save(*args, **kwargs)
         except Hotel.DoesNotExist:
             super().save(*args, **kwargs)
             HotelHistory.create_hotel_history(self)
     
     @staticmethod
-    def compare_supplier_and_create_hotel_history(instance):
+    def create_hotel_history_if_need(instance):
         old_hotel_data = Hotel.objects.get(pk=instance.pk)
         old_hotel_supplier = old_hotel_data.supplier
         if old_hotel_supplier != instance.supplier:
