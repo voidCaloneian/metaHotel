@@ -5,9 +5,9 @@ from .views import MetaHotelViewSet, HotelViewSet, BindHotelsAPIView
 
 router = DefaultRouter()
 router.register('hotel', HotelViewSet, basename='hotel')
-router.register('meta-hotel', MetaHotelViewSet, basename='meta-hotel')
+router.register('metahotel', MetaHotelViewSet, basename='metahotel')
 
 
 urlpatterns = [
-    path('bind/', BindHotelsAPIView.as_view())
+    path('bind/', BindHotelsAPIView.as_view(), name='bind-hotels')
 ] + router.urls

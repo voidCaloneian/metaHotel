@@ -2,6 +2,7 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelM
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from django.db import transaction
 from .serializers import MetaHotelSerializer, HotelSerializer, HotelHistorySerializer
 from .models import MetaHotel, Hotel
 
@@ -66,9 +67,10 @@ class BindHotelsAPIView(APIView):
         return Response(serializer.data)
     
     @staticmethod
+    @transaction.atomic()
     def update_meta_hotel_and_save_history(hotels, meta_hotel):
         #  Обновление было не через update метод для того,
         #  чтобы записывалась и история отелей 
         for hotel in hotels:
             hotel.meta_hotel = meta_hotel
-            hotel.save()
+            hotel.save() 
