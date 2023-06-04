@@ -1,8 +1,9 @@
 from django.db import models
+from django.core.validators import MinLengthValidator
 
 
 class MetaHotel(models.Model):
-    id = models.CharField(primary_key=True, max_length=100)
+    id = models.CharField(primary_key=True, max_length=100, validators=[MinLengthValidator(1)])
 
     def __str__(self):
         return self.id
@@ -11,11 +12,6 @@ class Hotel(models.Model):
     name = models.CharField(max_length=100)
     meta_hotel = models.ForeignKey(MetaHotel, on_delete=models.SET_NULL, null=True, blank=True, max_length=100, related_name='hotels')
     
-    class Meta:
-        indexes = [
-            models.Index(fields=['meta_hotel']),
-        ]
-
     def __str__(self):
         return self.name
     
@@ -29,6 +25,7 @@ class Hotel(models.Model):
     
     @staticmethod
     def create_hotel_history_if_need(instance):
+        print("ВЫЗЫВАЛИ?")
         old_hotel_data = Hotel.objects.get(pk=instance.pk)
         old_hotel_meta_hotel = old_hotel_data.meta_hotel
         if old_hotel_meta_hotel != instance.meta_hotel:
