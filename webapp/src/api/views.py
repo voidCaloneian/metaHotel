@@ -1,9 +1,12 @@
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from .serializers import MetaHotelSerializer, HotelSerializer
+from rest_framework.response import Response
+from .serializers import MetaHotelSerializer, HotelSerializer, HotelHistorySerializer
 from .models import MetaHotel, Hotel
 
+
+HOTEL_HISTORY_SERIALIZER = HotelHistorySerializer
 
 class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
     """
@@ -17,7 +20,22 @@ class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
         """
             | Получить историю привязки отеля (к каким мета-отелям в какой момент времени он был привязан)
         """
+        hotel = self.get_object()
+        hotel_serializer = self.get_serializer(hotel)
         
+        hotel_data = hotel_serializer.data
+        hotel_history_data = HOTEL_HISTORY_SERIALIZER(self.get_hotel_history(hotel), many=True).data
+        
+        response_data = {
+            **hotel_data,
+            'history': hotel_history_data
+        }
+    
+        return Response(response_data)
+    
+    @staticmethod
+    def get_hotel_history(hotel):
+        return hotel.history.all()
         
 
 class MetaHotelViewSet(ListModelMixin, GenericViewSet):

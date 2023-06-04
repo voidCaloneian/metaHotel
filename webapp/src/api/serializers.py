@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MetaHotel, Hotel
+from .models import HotelHistory, MetaHotel, Hotel
 
 
 class HotelSerializer(serializers.ModelSerializer):
@@ -12,4 +12,9 @@ class MetaHotelSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = MetaHotel
+        fields = '__all__'
+        
+class HotelHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HotelHistory
         fields = '__all__'
