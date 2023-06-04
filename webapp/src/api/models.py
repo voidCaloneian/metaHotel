@@ -1,6 +1,7 @@
 from django.db import models
+from django.db.models.signals import post_delete, pre_save
 from django.core.validators import MinLengthValidator
-
+from django.dispatch import receiver
 
 class MetaHotel(models.Model):
     id = models.CharField(primary_key=True, max_length=100, validators=[MinLengthValidator(1)])
@@ -25,7 +26,6 @@ class Hotel(models.Model):
     
     @staticmethod
     def create_hotel_history_if_need(instance):
-        print("ВЫЗЫВАЛИ?")
         old_hotel_data = Hotel.objects.get(pk=instance.pk)
         old_hotel_meta_hotel = old_hotel_data.meta_hotel
         if old_hotel_meta_hotel != instance.meta_hotel:
@@ -46,3 +46,27 @@ class HotelHistory(models.Model):
             hotel=instance,
             meta_hotel=instance.meta_hotel
         )
+        
+#  Переделать сохранение истории на систему сигналов
+
+@receiver(post_delete, sender=Hotel)
+def post_delete_hotel(sender ,instance, **kwargs):
+    meta_hotel = instance.meta_hotel
+    delete_meta_hotel_if_no_hotels(meta_hotel)
+
+@receiver(pre_save, sender=Hotel)
+def pre_save_hotel(sender, instance, **kwargs):
+    print(instance, instance.pk)
+    if instance.pk:
+        previous_meta_hotel = Hotel.objects.get(pk=instance.pk).meta_hotel
+        print(previous_meta_hotel, instance.meta_hotel)
+        if previous_meta_hotel != instance.meta_hotel:
+            delete_meta_hotel_if_no_hotels(previous_meta_hotel, minus_one_if_pre_save=True)
+        
+def delete_meta_hotel_if_no_hotels(meta_hotel, minus_one_if_pre_save):
+    hotels = Hotel.objects.filter(meta_hotel=meta_hotel)
+    hotels_amount = hotels.count()
+    if minus_one_if_pre_save:
+        hotels_amount -= 1
+    if hotels_amount <= 0:
+        meta_hotel.delete()

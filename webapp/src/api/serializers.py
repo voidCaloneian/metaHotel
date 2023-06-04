@@ -17,4 +17,4 @@ class MetaHotelSerializer(serializers.ModelSerializer):
 class HotelHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HotelHistory
-        fields = '__all__'
+        fields = ('id', 'meta_hotel', 'linked_datetime')

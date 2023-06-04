@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from .serializers import MetaHotelSerializer, HotelSerializer, HotelHistorySerializer
-from .models import HotelHistory, MetaHotel, Hotel
+from .models import MetaHotel, Hotel
 
 
 HOTEL_HISTORY_SERIALIZER = HotelHistorySerializer
