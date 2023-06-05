@@ -1,21 +1,20 @@
 from rest_framework.test import APITestCase, APIClient
-from django.urls import reverse
 from rest_framework import status
-from .models import MetaHotel, Hotel, HotelHistory
-from .serializers import MetaHotelSerializer, HotelSerializer, HotelHistorySerializer
 
-HOTEL_SERIALIZER = HotelSerializer
-META_HOTEL_SERIALIZER = MetaHotelSerializer
-HOTEL_HISTORY_SERIALIZER = HotelHistorySerializer
+from django.urls import reverse
+
+from .models import MetaHotel, Hotel, HotelHistory
+
 
 class TestHotelViewSet(APITestCase):
     def setUp(self):
         self.client = APIClient()
         self.hotel_data = {'name': 'Test hotel'}
-        self.url = reverse('hotel-list')
     
     def test_create_hotel(self):
-        response = self.client.post(self.url, self.hotel_data, format='json')
+        url = reverse('hotel-list')
+        
+        response = self.client.post(url, self.hotel_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Hotel.objects.count(), 1)
         self.assertEqual(Hotel.objects.get().name, 'Test hotel')

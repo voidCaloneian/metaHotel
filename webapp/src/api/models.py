@@ -3,6 +3,7 @@ from django.db.models.signals import post_delete, pre_save
 from django.core.validators import MinLengthValidator
 from django.dispatch import receiver
 
+
 class MetaHotel(models.Model):
     id = models.CharField(primary_key=True, max_length=100, validators=[MinLengthValidator(1)])
 
