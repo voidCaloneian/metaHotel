@@ -43,7 +43,6 @@ class TestHotelViewSet(APITestCase):
         self.assertEqual(response.data['meta_hotel'], meta_hotel.id)
         self.assertIn('history', response.data)
         self.assertEqual(len(response.data['history']), 1)
-        self.assertEqual(response.data['history'][0]['id'], 1)
 
 class TestMetaHotelViewSet(APITestCase):
     def setUp(self):

@@ -60,7 +60,7 @@ class BindHotelsAPIView(APIView):
         meta_hotel_id = request.data.get('meta_hotel', None)
         
         meta_hotel = MetaHotel.objects.get_or_create(id=meta_hotel_id)[0]
-        hotels = Hotel.objects.select_for_update(pk__in=hotel_pks)
+        hotels = Hotel.objects.select_for_update().filter(pk__in=hotel_pks)
         
         self.update_meta_hotel_and_save_history(hotels, meta_hotel)
         
