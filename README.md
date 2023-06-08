@@ -58,7 +58,7 @@ supplier_id: AAA
 - Сервис корректно работает, если запущен в нескольких экземплярах (инстансах)
 - Проект должен запускаться через docker-compose
 
-## Установка проекта
+### Установка проекта
 
 ```code
 git clone https://github.com/voidCaloneian/metaHotel.git
