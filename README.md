@@ -74,7 +74,7 @@ docker-compose up -d
 
 ### Запуск тестов API
 ```code
-docker-compose exec django sh -c "python ./src/manage.py test api"
+docker-compose exec django sh -c "python ./src/manage.py test"
 ```
 
 ### Работа с API через запросы
