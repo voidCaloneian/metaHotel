@@ -1,5 +1,6 @@
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 
@@ -9,16 +10,12 @@ from .serializers import MetaHotelSerializer, HotelSerializer, HotelHistorySeria
 from .models import MetaHotel, Hotel
 
 
-HOTEL_HISTORY_SERIALIZER = HotelHistorySerializer
-META_HOTEL_SERIALIZER = MetaHotelSerializer
-HOTEL_SERIALIZER = HotelSerializer
-
 class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
     """
         | Создать отель поставщика
         | Перепривязать отель к другому мета-отелю
     """
-    serializer_class = HOTEL_SERIALIZER
+    serializer_class = HotelSerializer
     queryset = Hotel.objects.all()
     
     def retrieve(self, request, *args, **kwargs):
@@ -26,10 +23,10 @@ class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
             | Получить историю привязки отеля (к каким мета-отелям в какой момент времени он был привязан)
         """
         hotel = self.get_object()
-        hotel_serializer = self.get_serializer(hotel)
+        HotelSerializer = self.get_serializer(hotel)
         
-        hotel_data = hotel_serializer.data
-        hotel_history_data = HOTEL_HISTORY_SERIALIZER(self.get_hotel_history(hotel), many=True).data
+        hotel_data = HotelSerializer.data
+        hotel_history_data = HotelHistorySerializer(self.get_hotel_history(hotel), many=True).data
         
         response_data = {
             **hotel_data,
@@ -43,18 +40,18 @@ class HotelViewSet(CreateModelMixin, UpdateModelMixin, GenericViewSet):
         return hotel.history.all()
         
 
-class MetaHotelViewSet(ListModelMixin, GenericViewSet):
+class MetaHotelViewSet(ListAPIView):
     """
         | Получить список мета-отелей и входящих в них отелей
     """
-    serializer_class = META_HOTEL_SERIALIZER
+    serializer_class = MetaHotelSerializer
     queryset = MetaHotel.objects.prefetch_related('hotels').all()
     
 class BindHotelsAPIView(APIView):
     """
         | Объединить 1 и более отелей поставщиков в один мета-отель
     """
-    meta_hotel_serializer = META_HOTEL_SERIALIZER
+    MetaHotelSerializer = MetaHotelSerializer
     def put(self, request, *args, **kwargs):
         hotel_pks = request.data.get('hotels_pks').split(',')
         meta_hotel_id = request.data.get('meta_hotel', None)
@@ -64,7 +61,7 @@ class BindHotelsAPIView(APIView):
         
         self.update_meta_hotel_and_save_history(hotels, meta_hotel)
         
-        serializer = self.meta_hotel_serializer(meta_hotel)
+        serializer = self.MetaHotelSerializer(meta_hotel)
         
         return Response(serializer.data)
     
